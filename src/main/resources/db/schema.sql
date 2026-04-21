@@ -1,8 +1,14 @@
 CREATE TABLE IF NOT EXISTS collectivity (
                                             id SERIAL PRIMARY KEY,
-                                            id_number VARCHAR(50) UNIQUE NOT NULL,
-    name VARCHAR(100) UNIQUE NOT NULL,
-    city VARCHAR(100),
-    specialty VARCHAR(100),
-    creation_date DATE DEFAULT CURRENT_DATE
+                                            location VARCHAR(255),
+    federation_approval BOOLEAN DEFAULT FALSE
+    );
+
+CREATE TABLE IF NOT EXISTS member (
+                                      id SERIAL PRIMARY KEY,
+                                      first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    birth_date DATE,
+    email VARCHAR(150),
+    collectivity_id INT REFERENCES collectivity(id)
     );

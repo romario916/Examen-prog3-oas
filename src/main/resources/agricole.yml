@@ -3,15 +3,15 @@ info:
   title: Agricultural federation API
   description: |
     # Versioning
-    - v0.0.1 (2026-04-21) : Initial release.
-    - v0.0.2 (2026-04-22) : Point J - Added unique and immutable identification for collectivities.
-  version: 0.0.2
+    - v0.0.1 (2026-04-21) : Implémentation des fonctionnalités de création, d'admission et des statistiques de la fédération.
+  version: 0.0.1
 servers:
   - url: 'https://localhost:8080'
 paths:
   '/collectivities':
     post:
-      summary: Create list of collectivities
+      summary: Création de collectivités
+      description: Permet de créer une liste de collectivités.
       requestBody:
         content:
           application/json:
@@ -21,69 +21,120 @@ paths:
                 $ref: '#/components/schemas/CreateCollectivity'
       responses:
         201:
-          description: Created
+          description: Liste des collectivités créées avec succès.
         400:
-          description: Structure missing or Point J violation.
-  '/collectivities/{id}':
-    put:
-      summary: Update a collectivity
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+          description: Structure manquante ou approbation de la fédération absente.
+
+  '/members':
+    post:
+      summary: Admission de nouveaux membres
+      description: Permet d'enregistrer de nouveaux membres selon les critères d'admission.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Collectivity'
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateMember'
+      responses:
+        201:
+          description: Membres admis avec succès.
+        400:
+          description: Problème de parrainage ou frais non payés.
+
+  '/statistics/report':
+    get:
+      summary: Rapport global de la fédération
+      description: Recensement mensuel et annuel des données statistiques par collectivité.
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
       responses:
         200:
-          description: Updated
-        400:
-          description: "Bad Request: id_number or name modification attempted (Point J)"
+          description: Rapport statistique généré.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FederationStat'
+
 components:
   schemas:
     CreateCollectivity:
       type: object
-      required: [id_number, name, location]
+      required: [location, structure]
       properties:
-        id_number:
-          type: string
-          description: "Unique and immutable ID (Point J)"
-        name:
-          type: string
-          description: "Unique and immutable Name (Point J)"
         location:
           type: string
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/MemberIdentifier'
-    Collectivity:
+        federationApproval:
+          type: boolean
+        structure:
+          $ref: '#/components/schemas/CreateCollectivityStructure'
+
+    CreateCollectivityStructure:
       type: object
       properties:
-        id:
-          type: string
-        id_number:
-          type: string
-        name:
-          type: string
-        location:
-          type: string
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/Member'
-    MemberIdentifier:
-      type: string
-    Member:
+        president: { type: string }
+        vicePresident: { type: string }
+        treasurer: { type: string }
+        secretary: { type: string }
+
+    CreateMember:
       type: object
+      required: [firstName, lastName, collectivityIdentifier]
       properties:
-        id:
-          $ref: '#/components/schemas/MemberIdentifier'
         firstName:
           type: string
         lastName:
           type: string
+        collectivityIdentifier:
+          type: string
+        registrationFeePaid:
+          type: boolean
+        membershipDuesPaid:
+          type: boolean
+        referees:
+          type: array
+          items:
+            type: string
+
+    FederationStat:
+      type: object
+      properties:
+        collectivityName:
+          type: string
+        attendanceRate:
+          type: number
+          format: float
+          description: "Taux d'assiduité global"
+        membershipDuesPaidPercentage:
+          type: number
+          format: float
+          description: "Pourcentage de membres à jour de cotisation"
+        newAdherentsCount:
+          type: integer
+          description: "Nombre de nouveaux adhérents sur la période"
+
+    Collectivity:
+      type: object
+      properties:
+        id: { type: string }
+        location: { type: string }
+
+    Member:
+      type: object
+      properties:
+        id: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
