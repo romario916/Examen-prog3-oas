@@ -1,0 +1,89 @@
+openapi: 3.1.0
+info:
+  title: Agricultural federation API
+  description: |
+    # Versioning
+    - v0.0.1 (2026-04-21) : Initial release.
+    - v0.0.2 (2026-04-22) : Point J - Added unique and immutable identification for collectivities.
+  version: 0.0.2
+servers:
+  - url: 'https://localhost:8080'
+paths:
+  '/collectivities':
+    post:
+      summary: Create list of collectivities
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateCollectivity'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Structure missing or Point J violation.
+  '/collectivities/{id}':
+    put:
+      summary: Update a collectivity
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collectivity'
+      responses:
+        200:
+          description: Updated
+        400:
+          description: "Bad Request: id_number or name modification attempted (Point J)"
+components:
+  schemas:
+    CreateCollectivity:
+      type: object
+      required: [id_number, name, location]
+      properties:
+        id_number:
+          type: string
+          description: "Unique and immutable ID (Point J)"
+        name:
+          type: string
+          description: "Unique and immutable Name (Point J)"
+        location:
+          type: string
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberIdentifier'
+    Collectivity:
+      type: object
+      properties:
+        id:
+          type: string
+        id_number:
+          type: string
+        name:
+          type: string
+        location:
+          type: string
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+    MemberIdentifier:
+      type: string
+    Member:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/MemberIdentifier'
+        firstName:
+          type: string
+        lastName:
+          type: string
