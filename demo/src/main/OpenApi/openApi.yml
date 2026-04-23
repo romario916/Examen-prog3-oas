@@ -1,3 +1,4 @@
+# update: commit trigger
 openapi: 3.0.0
 info:
   title: API Fédération Agricole de Madagascar
@@ -264,4 +265,5 @@ components:
         collectivityName: { type: string }
         attendanceRate: { type: number }
         percentageUpToDate: { type: number }
-        newAdherentsCount: { type: integer }
+        newAdherentsCount: {  type: integer }
+
