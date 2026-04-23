@@ -1,33 +1,30 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Transaction;
+import com.example.demo.repository.FinancialJdbcRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class FinancialService {
-    private static final List<Transaction> transactionsDb = new ArrayList<>();
 
-    public void recordPayment(String accountId, BigDecimal amount) {
-        Transaction tx = new Transaction();
-        tx.setAccountId(accountId);
-        tx.setAmount(amount);
-        tx.setTransactionDate(LocalDate.now());
-        transactionsDb.add(tx);
+    private final FinancialJdbcRepository financialRepository;
+
+    public void recordPayment(String memberId, double amount, String accountId, String mode) {
+        try {
+            financialRepository.savePayment(memberId, amount, accountId, mode);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de l'enregistrement du paiement en base", e);
+        }
     }
 
     public BigDecimal getBalanceAtDate(String accountId, LocalDate at) {
-        BigDecimal total = BigDecimal.ZERO;
-        for (Transaction tx : transactionsDb) {
-            if (tx.getAccountId().equals(accountId)) {
-                if (!tx.getTransactionDate().isAfter(at)) {
-                    total = total.add(tx.getAmount());
-                }
-            }
+        try {
+            return financialRepository.calculateBalance(accountId, at);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération du solde", e);
         }
-        return total;
     }
 }
