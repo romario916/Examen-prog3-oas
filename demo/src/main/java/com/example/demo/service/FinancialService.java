@@ -22,7 +22,7 @@ public class FinancialService {
 
     public BigDecimal getBalanceAtDate(String accountId, LocalDate at) {
         try {
-            return financialRepository.calculateBalance(accountId, at);
+            return financialRepository.getBalanceAtDate(accountId, at);
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la récupération du solde", e);
         }
