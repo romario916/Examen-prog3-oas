@@ -15,6 +15,7 @@ import java.util.UUID;
 
 @Repository
 public class FinancialJdbcRepository {
+
     @Value("${spring.datasource.url}")
     private String url;
 
@@ -24,7 +25,7 @@ public class FinancialJdbcRepository {
     @Value("${spring.datasource.password}")
     private String pwd;
 
-    public BigDecimal getBalanceAtDate(String accountId, LocalDate date) throws SQLException {
+    public BigDecimal calculateBalance(String accountId, LocalDate date) throws SQLException {
         String sql = "SELECT SUM(amount) FROM collectivity_transactions WHERE account_id = ? AND creation_date <= ?";
         try (Connection conn = DriverManager.getConnection(url, user, pwd);
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -40,6 +41,10 @@ public class FinancialJdbcRepository {
             }
         }
         return BigDecimal.ZERO;
+    }
+
+    public BigDecimal getBalanceAtDate(String accountId, LocalDate date) throws SQLException {
+        return calculateBalance(accountId, date);
     }
 
     public void savePayment(String memberId, double amount, String accountId, String mode) throws SQLException {
