@@ -13,13 +13,7 @@ public class CollectivityOverallStatistics {
     private CollectivityInformation collectivityInformation;
     private Integer newMembersNumber;
     private Double overallMemberCurrentDuePercentage;
+    private Double overallAttendanceRate;
 }
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-class CollectivityInformation {
-    private String name;
-    private Integer number;
-}
+

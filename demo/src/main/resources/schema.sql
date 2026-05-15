@@ -65,3 +65,20 @@ CREATE TABLE sponsorships (
                               member_id VARCHAR(50) REFERENCES members(id),
                               sponsor_id VARCHAR(50) REFERENCES members(id)
 );
+
+CREATE TABLE IF NOT EXISTS collectivity_activities (
+                                                       id VARCHAR(50) PRIMARY KEY,
+    collectivity_id VARCHAR(50) REFERENCES collectivities(id),
+    label VARCHAR(100) NOT NULL,
+    activity_type VARCHAR(50),
+    executive_date DATE,
+    recurrence_rule TEXT
+    );
+
+CREATE TABLE IF NOT EXISTS activity_member_attendance (
+                                                          id SERIAL PRIMARY KEY,
+                                                          activity_id VARCHAR(50) REFERENCES collectivity_activities(id),
+    member_id VARCHAR(50) REFERENCES members(id),
+    attendance_status VARCHAR(20) DEFAULT 'UNDEFINED',
+    UNIQUE(activity_id, member_id)
+    );

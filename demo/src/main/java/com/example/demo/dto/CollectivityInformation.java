@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CollectivityLocalStatistics {
-    private MemberDescription memberDescription;
-    private Double earnedAmount;
-    private Double unpaidAmount;
-    private Double attendanceRate;
+public class CollectivityInformation {
+    private String name;
+    private Integer number;
 }
